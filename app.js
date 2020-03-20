@@ -1,7 +1,7 @@
 //************************************************
 //					    SETUP
 //************************************************
-//require packages
+//imports express framework and body parser which allows us to parse the body of a req
 var express = require("express");
 var bodyParser = require("body-parser");
 
@@ -11,6 +11,7 @@ var app = express();
 //tell app to use
 app.use(bodyParser.urlencoded({extended: true}));
 
+//static array data storage
 var campsites = [
 		{name: "Hillside", image: "https://images.unsplash.com/photo-1471115853179-bb1d604434e0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60"},
 		{name: "Sunny Creek", image: "https://images.unsplash.com/photo-1500581276021-a4bbcd0050c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60"},
