@@ -11,7 +11,7 @@
 		</div>
 	</header>
 
-	<div class="row">
+	<div class="row text-center">
 		<% campsites.forEach(function(campsite){ %>
 		<div class="col-md-3 col-sm-6">
 			<div class="thumbnail" >
@@ -20,6 +20,9 @@
 				<div class="caption">
 					<h4><%= campsite.name %></h4>
 				</div>
+				<p>
+					<a href="/campsites/<%= campsite._id%>" class="btn btn-primary">Show Details</a>
+				</p>
 			</div>
 		</div>
 	<% }); %>

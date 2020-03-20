@@ -4,6 +4,7 @@
 //imports express framework and body parser which allows us to parse the body of a req
 var express = require("express");
 var bodyParser = require("body-parser");
+var mongoose = require("mongoose");
 
 //executable
 var app = express();
@@ -11,41 +12,92 @@ var app = express();
 //tell app to use
 app.use(bodyParser.urlencoded({extended: true}));
 
-//static array data storage
-var campsites = [
-		{name: "Hillside", image: "https://images.unsplash.com/photo-1471115853179-bb1d604434e0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60"},
-		{name: "Sunny Creek", image: "https://images.unsplash.com/photo-1500581276021-a4bbcd0050c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60"},
-		{name: "Grassy Bend", image: "https://images.unsplash.com/photo-1492648272180-61e45a8d98a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60"},
-		{name: "Sunny Creek", image: "https://images.unsplash.com/photo-1496947850313-7743325fa58c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60"},
-		{name: "Grassy Bend", image: "https://images.unsplash.com/photo-1455763916899-e8b50eca9967?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60"},
-		{name: "Hillside", image: "https://images.unsplash.com/photo-1445308394109-4ec2920981b1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=900&q=60"}];
+//connecting to mongodb database, if it doesn't exist yet it will create it
+mongoose.connect("mongodb://localhost/yelpCamp");
+
+//setting up schema
+var campSchema = new mongoose.Schema({
+	name: String,
+	image: String,
+	description: String
+});
+
+//create a model with this schema so that we can use methods like create, find, etc...
+var Camp = mongoose.model("Camp", campSchema);
+
+// Camp.create({
+// 	name: "Cliffside Camp",
+// 	image: "https://images.unsplash.com/photo-1517217451453-818405428795?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80",
+// 	description: "This is a beautiful campsite located on the side of a cliff.  Great views all around."
+// },function(err,camp){
+// 	if(err){
+// 		console.log(err);
+// 	}else{
+// 		console.log("CAMP CREATED:");
+// 		console.log(camp);
+// 	}
+// })
 
 //************************************************
-//					    ROUTES
+//				  RESTFUL ROUTES
 //************************************************
-//routes
+
+//HOME ROUTE
 app.get("/", function(req, res){
 	res.render("landing.ejs");
 });
 
-//campsites route
+//INDEX ROUTE: shows all camps
 app.get("/campsites", function(req, res){
-	res.render("campsites.ejs", {campsites: campsites});
+
+	//retrieve all camps from mongo database, specify no specific attribute (b/c we want all camps)
+	//callback function allows us to see if err occurs, and 2nd arg is the camps found in db
+	Camp.find({}, function(err, camps){
+		if(err){
+			console.log(err);
+		}else{
+			res.render("index.ejs", {campsites: camps}); //render campsites view with camps found from db
+		}
+	});
+
 });
 
-//campsites creation form route that makes a post request to campsites post route
+//NEW ROUTE: shows form to make new camp (calls post campsites post route)
 app.get("/campsites/new", function(req, res){
 	res.render("new.ejs");
 });
 
-//post route (named it the same as get route b/c it follows REST convention)
+//CREATE ROUTE: adds new camp to database and redirects to INDEX ROUTE
 //get data from form and add it to array and redirect back to campsite page
 app.post("/campsites", function(req, res){
-	var name = req.body.name;
-	var image = req.body.image;
-	var campsite = {name: name, image: image};
-	campsites.push(campsite);
-	res.redirect("/campsites"); //redirect defaults to get route
+	var name = req.body.name; //parses camp name from req that came from form
+	var image = req.body.image; //parses image url from req that came from form
+	var description = req.body.description //parses description from req that cam from form
+	var campsite = {name: name, image: image, description: description}; //creates new camp obj
+
+	//adding camp obj to db
+	Camp.create(campsite, function(err, camp){   
+		if(err){
+			console.log(err);
+		}else{
+			res.redirect("/campsites"); //redirects to INDEX ROUTE
+		}
+	});
+});
+
+//SHOW ROUTE: shows info about one camp (make sure this route comes after NEW ROUTE so it doesn't overrwrite)
+app.get("/campsites/:id", function(req, res){
+	//find camp with specific id
+	var id = req.params.id;
+
+	Camp.findById(id, function(err, campFound){
+		if(err){
+			console.log(err);
+		}else{
+			//render show page with this specific camp
+			res.render("show.ejs", {camp:campFound})
+		}
+	});
 });
 
 //************************************************
