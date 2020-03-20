@@ -5,6 +5,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
+var Camp = require("./models/camps");  //module export that handles camp schema and model creation
 
 //executable
 var app = express();
@@ -15,17 +16,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 //connecting to mongodb database, if it doesn't exist yet it will create it
 mongoose.connect("mongodb://localhost/yelpCamp");
 
-//setting up schema
-var campSchema = new mongoose.Schema({
-	name: String,
-	image: String,
-	description: String
-});
-
-//create a model with this schema so that we can use methods like create, find, etc...
-var Camp = mongoose.model("Camp", campSchema);
-
-// Camp.create({
+// Camp.create({   
 // 	name: "Cliffside Camp",
 // 	image: "https://images.unsplash.com/photo-1517217451453-818405428795?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80",
 // 	description: "This is a beautiful campsite located on the side of a cliff.  Great views all around."
