@@ -5,7 +5,9 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
-var Camp = require("./models/camps");  //module export that handles camp schema and model creation
+var Camp = require("./models/camp");  			//module export that handles camp schema and model creation
+var Comment = require("./models/comment"); 		//module export that handles comment schema and model creation
+var seed = require("./seeds"); 					//module export that handles seeding of database	
 
 //executable
 var app = express();
@@ -16,18 +18,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 //connecting to mongodb database, if it doesn't exist yet it will create it
 mongoose.connect("mongodb://localhost/yelpCamp");
 
-// Camp.create({   
-// 	name: "Cliffside Camp",
-// 	image: "https://images.unsplash.com/photo-1517217451453-818405428795?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80",
-// 	description: "This is a beautiful campsite located on the side of a cliff.  Great views all around."
-// },function(err,camp){
-// 	if(err){
-// 		console.log(err);
-// 	}else{
-// 		console.log("CAMP CREATED:");
-// 		console.log(camp);
-// 	}
-// })
+//sedding database
+seed();
 
 //************************************************
 //				  RESTFUL ROUTES
