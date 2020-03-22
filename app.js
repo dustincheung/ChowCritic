@@ -73,7 +73,8 @@ app.get("/campsites/:id", function(req, res){
 	//find camp with specific id
 	var id = req.params.id;
 
-	Camp.findById(id, function(err, campFound){
+	//populate method is used to fill comment arrays w/ actual comments and not just ids
+	Camp.findById(id).populate("comments").exec(function(err, campFound){
 		if(err){
 			console.log(err);
 		}else{
