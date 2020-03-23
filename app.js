@@ -39,7 +39,7 @@ app.get("/campsites", function(req, res){
 		if(err){
 			console.log(err);
 		}else{
-			res.render("index.ejs", {campsites: camps}); //render campsites view with camps found from db
+			res.render("camps/index.ejs", {campsites: camps}); //render campsites view with camps found from db
 		}
 	});
 
@@ -47,7 +47,7 @@ app.get("/campsites", function(req, res){
 
 //NEW ROUTE: shows form to make new camp (calls post campsites post route)
 app.get("/campsites/new", function(req, res){
-	res.render("new.ejs");
+	res.render("camps/new.ejs");
 });
 
 //CREATE ROUTE: adds new camp to database and redirects to INDEX ROUTE
@@ -79,10 +79,53 @@ app.get("/campsites/:id", function(req, res){
 			console.log(err);
 		}else{
 			//render show page with this specific camp
-			res.render("show.ejs", {camp:campFound})
+			res.render("camps/show.ejs", {camp:campFound})
 		}
 	});
 });
+
+//*************************************************
+//					COMMENTS ROUTE
+//************************************************
+//NESTED ROUTES FOR COMMENT NEW AND CREATE ROUTE
+
+//NEW ROUTE: shows form to make new comments (calls post campsites post route)
+app.get("/campsites/:id/comments/new", function(req,res){
+	var id = req.params.id;
+
+	Camp.findById(id, function(err, camp){
+		if(err){
+			console.log(err);
+		}else{
+			res.render("comments/new.ejs", {camp:camp});
+		}
+	});
+});
+
+app.post("/campsites/:id/comments", function(req, res){
+	//lookup campsite using id
+	var id = req.params.id;
+
+	Camp.findById(id, function(err, camp){
+		if(err){
+			console.log(err);
+			res.redirect("/campsites");
+		}else{
+			//create a new comment
+			Comment.create(req.body.comment, function(err,comment){
+				if(err){
+					console.log(err);
+				}else{
+					//add comment to campsite and redirect to show page
+					camp.comments.push(comment);
+					camp.save();
+					res.redirect("/campsites/" + camp._id);
+				}
+			});
+		}
+	});
+});
+
 
 //************************************************
 //					    SERVER

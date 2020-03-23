@@ -1,13 +1,16 @@
-<%- include("partials/header.ejs") %>
+<%- include("../partials/header.ejs") %>
 <h1><%= camp.name %></h1>
 
 <img src="<%=camp.image%>">
 <p><%= camp.description %></p>
 
+<p>
+	<a class="btn btn-success" href="/campsites/<%= camp._id %>/comments/new">add new comment</a>
+</p>
 <% camp.comments.forEach(function(comment){ %>
 	<p>
 		<strong> <%= comment.author %> </strong> - <%= comment.text %>		
 	</p>
 <% }); %>
 
-<%- include("partials/footer.ejs") %>
+<%- include("../partials/footer.ejs") %>
