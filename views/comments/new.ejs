@@ -2,9 +2,9 @@
 
 <div class="container">
 	<div class="row">
-		<h1 style="text-align: center">add new comment to <%= camp.name %></h1>
+		<h1 style="text-align: center">add new comment to <%= restaurant.name %></h1>
 		<div style="width: 30%; margin:30px auto;">
-			<form action="/campsites/<%= camp._id %>/comments" method="POST">
+			<form action="/restaurants/<%= restaurant._id %>/comments" method="POST">
 				<!--text and author will be stored in body wrapped together under comment-->
 				<div class="form-group">
 					<input class="form-control" type="text" name="comment[text]" placeholder="text">
@@ -16,7 +16,7 @@
 					<button class="btn btn-lg btn-primary btn-block">submit</button>
 				</div>
 			</form>
-			<a href="/campsites">go back</a>
+			<a href="/restaurants">go back</a>
 		</div>
 	</div>
 </div>

@@ -3,25 +3,25 @@
 <div class="container">
 	<header class="jumbotron">
 		<div class="container">
-			<h1>Welcome to BestCamp</h1>
-			<p>Expore the best campsites around.</p>
+			<h1>Welcome to ChowCritic</h1>
+			<p>Expore the best restaurants around.</p>
 			<p>
-				<a class="btn btn-primary btn-lrg" href="/campsites/new">add a new campsite</a>
+				<a class="btn btn-primary btn-lrg" href="/restaurants/new">add a new restaurant</a>
 			</p>
 		</div>
 	</header>
 
 	<div class="row text-center">
-		<% campsites.forEach(function(campsite){ %>
+		<% restaurants.forEach(function(restaurant){ %>
 		<div class="col-md-3 col-sm-6">
 			<div class="thumbnail" >
 				<!--move style tag to an actual style sheet-->
-				<img style="width:100%; height: 200px;" src="<%= campsite.image %>">
+				<img style="width:100%; height: 200px;" src="<%= restaurant.image %>">
 				<div class="caption">
-					<h4><%= campsite.name %></h4>
+					<h4><%= restaurant.name %></h4>
 				</div>
 				<p>
-					<a href="/campsites/<%= campsite._id%>" class="btn btn-primary">Show Details</a>
+					<a href="/restaurants/<%= restaurant._id%>" class="btn btn-primary">Show Details</a>
 				</p>
 			</div>
 		</div>

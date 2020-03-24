@@ -2,7 +2,7 @@
 var mongoose = require("mongoose");
 
 //setting up schema
-var campSchema = new mongoose.Schema({
+var restaurantSchema = new mongoose.Schema({
 	name: String,
 	image: String,
 	description: String,
@@ -15,6 +15,6 @@ var campSchema = new mongoose.Schema({
 });
 
 //create a model with this schema so that we can use methods like create, find, etc...
-var Camp = mongoose.model("Camp", campSchema);
+var Restaurant = mongoose.model("Restaurant", restaurantSchema);
 
-module.exports = Camp;
+module.exports = Restaurant;

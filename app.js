@@ -5,9 +5,9 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
-var Camp = require("./models/camp");  			//module export that handles camp schema and model creation
-var Comment = require("./models/comment"); 		//module export that handles comment schema and model creation
-var seed = require("./seeds"); 					//module export that handles seeding of database	
+var Restaurant = require("./models/restaurant");  	//module export that handles restaurant schema and model creation
+var Comment = require("./models/comment"); 			//module export that handles comment schema and model creation
+var seed = require("./seeds"); 						//module export that handles seeding of database	
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
 var User = require("./models/user");
@@ -21,9 +21,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
 
 //connecting to mongodb database, if it doesn't exist yet it will create it
-mongoose.connect("mongodb://localhost/yelpCamp");
+mongoose.connect("mongodb://localhost/chowCritic");
 
-//sedding database
+//seeding database
 seed();
 
 //configuring passport
@@ -53,56 +53,56 @@ app.get("/", function(req, res){
 	res.render("landing.ejs");
 });
 
-//INDEX ROUTE: shows all camps
-app.get("/campsites", function(req, res){
-	//retrieve all camps from mongo database, specify no specific attribute (b/c we want all camps)
-	//callback function allows us to see if err occurs, and 2nd arg is the camps found in db
-	Camp.find({}, function(err, camps){
+//INDEX ROUTE: shows all restaurants
+app.get("/restaurants", function(req, res){
+	//retrieve all restaurants from mongo database, specify no specific attribute (b/c we want all restaurants)
+	//callback function allows us to see if err occurs, and 2nd arg is the restaurants found in db
+	Restaurant.find({}, function(err, restaurants){
 		if(err){
 			console.log(err);
 		}else{
-			//render campsites view with camps found from db
-			res.render("camps/index.ejs", {campsites: camps}); 
+			//render restaurants view with restaurants found from db
+			res.render("restaurants/index.ejs", {restaurants: restaurants}); 
 		}
 	});
 
 });
 
-//NEW ROUTE: shows form to make new camp (calls post campsites post route)
-app.get("/campsites/new", function(req, res){
-	res.render("camps/new.ejs");
+//NEW ROUTE: shows form to make new restaurant (calls post restaurants post route)
+app.get("/restaurants/new", function(req, res){
+	res.render("restaurants/new.ejs");
 });
 
-//CREATE ROUTE: adds new camp to database and redirects to INDEX ROUTE
-//get data from form and add it to array and redirect back to campsite page
-app.post("/campsites", function(req, res){
-	var name = req.body.name; //parses camp name from req that came from form
+//CREATE ROUTE: adds new restaurant to database and redirects to INDEX ROUTE
+//get data from form and add it to array and redirect back to restaurant page
+app.post("/restaurants", function(req, res){
+	var name = req.body.name; //parses restaurant name from req that came from form
 	var image = req.body.image; //parses image url from req that came from form
 	var description = req.body.description //parses description from req that cam from form
-	var campsite = {name: name, image: image, description: description}; //creates new camp obj
+	var restaurant = {name: name, image: image, description: description}; //creates new restaurant obj
 
-	//adding camp obj to db
-	Camp.create(campsite, function(err, camp){   
+	//adding restaurant obj to db
+	Restaurant.create(restaurant, function(err, restaurant){   
 		if(err){
 			console.log(err);
 		}else{
-			res.redirect("/campsites"); //redirects to INDEX ROUTE
+			res.redirect("/restaurants"); //redirects to INDEX ROUTE
 		}
 	});
 });
 
-//SHOW ROUTE: shows info about one camp (make sure this route comes after NEW ROUTE so it doesn't overrwrite)
-app.get("/campsites/:id", function(req, res){
-	//find camp with specific id
+//SHOW ROUTE: shows info about one restaurant (make sure this route comes after NEW ROUTE so it doesn't overrwrite)
+app.get("/restaurants/:id", function(req, res){
+	//find restaurant with specific id
 	var id = req.params.id;
 
 	//populate method is used to fill comment arrays w/ actual comments and not just ids
-	Camp.findById(id).populate("comments").exec(function(err, campFound){
+	Restaurant.findById(id).populate("comments").exec(function(err, restaurantFound){
 		if(err){
 			console.log(err);
 		}else{
-			//render show page with this specific camp
-			res.render("camps/show.ejs", {camp:campFound})
+			//render show page with this specific restaurant
+			res.render("restaurants/show.ejs", {restaurant:restaurantFound})
 		}
 	});
 });
@@ -112,37 +112,37 @@ app.get("/campsites/:id", function(req, res){
 //************************************************
 //NESTED ROUTES FOR COMMENT NEW AND CREATE ROUTE
 
-//NEW ROUTE: shows form to make new comments (calls post campsites post route)
-app.get("/campsites/:id/comments/new", isLoggedIn, function(req,res){
+//NEW ROUTE: shows form to make new comments (calls post restaurants post route)
+app.get("/restaurants/:id/comments/new", isLoggedIn, function(req,res){
 	var id = req.params.id;
 
-	Camp.findById(id, function(err, camp){
+	Restaurant.findById(id, function(err, restaurant){
 		if(err){
 			console.log(err);
 		}else{
-			res.render("comments/new.ejs", {camp:camp});
+			res.render("comments/new.ejs", {restaurant:restaurant});
 		}
 	});
 });
 
-app.post("/campsites/:id/comments", isLoggedIn, function(req, res){
-	//lookup campsite using id
+app.post("/restaurants/:id/comments", isLoggedIn, function(req, res){
+	//lookup restaurant using id
 	var id = req.params.id;
 
-	Camp.findById(id, function(err, camp){
+	Restaurant.findById(id, function(err, restaurant){
 		if(err){
 			console.log(err);
-			res.redirect("/campsites");
+			res.redirect("/restaurants");
 		}else{
 			//create a new comment
 			Comment.create(req.body.comment, function(err,comment){
 				if(err){
 					console.log(err);
 				}else{
-					//add comment to campsite and redirect to show page
-					camp.comments.push(comment);
-					camp.save();
-					res.redirect("/campsites/" + camp._id);
+					//add comment to restaurant and redirect to show page
+					restaurant.comments.push(comment);
+					restaurant.save();
+					res.redirect("/restaurants/" + restaurant._id);
 				}
 			});
 		}
@@ -167,7 +167,7 @@ app.post("/register", function(req, res){
 			res.render("register.ejs");
 		}
 		passport.authenticate("local")(req, res, function(){
-			res.redirect("/campsites");
+			res.redirect("/restaurants");
 		})
 	});
 });
@@ -180,7 +180,7 @@ app.get("/login", function(req, res){
 //handle log in logic, middleware authenticates user and redirects accordingly
 app.post("/login", passport.authenticate("local", 
 	{
-		successRedirect: "/campsites", 
+		successRedirect: "/restaurants", 
 		failureRedirect: "/login"
 	}), function(req,res){
 	res.send("logging in");
@@ -189,7 +189,7 @@ app.post("/login", passport.authenticate("local",
 //handle log out logic
 app.get("/logout", function(req, res){
 	req.logout();
-	res.redirect("/campsites");
+	res.redirect("/restaurants");
 });
 
 //middleware to check if a user is logged in
@@ -205,5 +205,5 @@ function isLoggedIn(req, res, next){
 //************************************************
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
-	console.log("BestCamp server is running!");
+	console.log("ChowCritic server is running!");
 });
