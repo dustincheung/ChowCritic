@@ -32,31 +32,32 @@ router.get("/restaurants/new", isLoggedIn, function(req, res){
 	res.render("restaurants/new.ejs");
 });
 
-//CREATE ROUTE: adds new restaurant to database and redirects to INDEX ROUTE
-//get data from form and add it to array and redirect back to restaurant page
+//CREATE ROUTE: creates and adds new restaurant to database and redirects to INDEX ROUTE
+
 router.post("/restaurants", isLoggedIn, function(req, res){
-	var name = req.body.name; //parses restaurant name from req that came from form
-	var image = req.body.image; //parses image url from req that came from form
-	var description = req.body.description //parses description from req that cam from form
+	var name = req.body.name; 
+	var image = req.body.image; 
+	var description = req.body.description 
+	
 	var author = {
 			id: req.user._id,
 			username: req.user.username
 	}
+
 	var restaurant = {name: name, image: image, description: description, author: author}; //creates new restaurant obj
 	console.log(restaurant);
-	//adding restaurant obj to db
+
 	Restaurant.create(restaurant, function(err, restaurant){   
 		if(err){
 			console.log(err);
 		}else{
-			res.redirect("/restaurants"); //redirects to INDEX ROUTE
+			res.redirect("/restaurants");
 		}
 	});
 });
 
 //SHOW ROUTE: shows info about one restaurant (make sure this route comes after NEW ROUTE so it doesn't overrwrite)
 router.get("/restaurants/:id", function(req, res){
-	//find restaurant with specific id
 	var id = req.params.id;
 
 	//populate method is used to fill comment arrays w/ actual comments and not just ids
@@ -78,5 +79,5 @@ function isLoggedIn(req, res, next){
 	res.redirect("/login");
 }
 
-//export routers
+//export router
 module.exports = router;

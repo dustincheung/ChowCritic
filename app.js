@@ -1,16 +1,19 @@
 //************************************************
 //					    SETUP
 //************************************************
-//imports express framework and body parser which allows us to parse the body of a req
-var express = require("express");
-var bodyParser = require("body-parser");
-var mongoose = require("mongoose");
-var Restaurant = require("./models/restaurant");  	//module export that handles restaurant schema and model creation
-var Comment = require("./models/comment"); 			//module export that handles comment schema and model creation
-var seed = require("./seeds"); 						//module export that handles seeding of database	
+var express = require("express");					
+var bodyParser = require("body-parser");			
+var mongoose = require("mongoose");					
+
+//db models and shema setup
+var Restaurant = require("./models/restaurant");  	
+var Comment = require("./models/comment"); 	
+var User = require("./models/user");		
+var seed = require("./seeds"); 							
+
+//authorization imports
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
-var User = require("./models/user");
 
 //importing routes
 var restaurantRoutes = require("./routes/restaurants");
@@ -22,6 +25,7 @@ var app = express();
 
 //tell app to use body parser
 app.use(bodyParser.urlencoded({extended: true}));
+
 //tell app to serve style sheet directories
 app.use(express.static(__dirname + "/public"));
 
