@@ -9,7 +9,7 @@ var Restaurant = require("../models/restaurant");
 var Comment = require("../models/comment");
 
 //************************************************
-//				  RESTFUL ROUTES
+//				  RESTAURANT ROUTES
 //************************************************
 
 //INDEX ROUTE: shows all restaurants
@@ -28,18 +28,22 @@ router.get("/restaurants", function(req, res){
 });
 
 //NEW ROUTE: shows form to make new restaurant (calls post restaurants post route)
-router.get("/restaurants/new", function(req, res){
+router.get("/restaurants/new", isLoggedIn, function(req, res){
 	res.render("restaurants/new.ejs");
 });
 
 //CREATE ROUTE: adds new restaurant to database and redirects to INDEX ROUTE
 //get data from form and add it to array and redirect back to restaurant page
-router.post("/restaurants", function(req, res){
+router.post("/restaurants", isLoggedIn, function(req, res){
 	var name = req.body.name; //parses restaurant name from req that came from form
 	var image = req.body.image; //parses image url from req that came from form
 	var description = req.body.description //parses description from req that cam from form
-	var restaurant = {name: name, image: image, description: description}; //creates new restaurant obj
-
+	var author = {
+			id: req.user._id,
+			username: req.user.username
+	}
+	var restaurant = {name: name, image: image, description: description, author: author}; //creates new restaurant obj
+	console.log(restaurant);
 	//adding restaurant obj to db
 	Restaurant.create(restaurant, function(err, restaurant){   
 		if(err){
