@@ -40,6 +40,11 @@ router.post("/restaurants/:id/comments", isLoggedIn, function(req, res){
 				if(err){
 					console.log(err);
 				}else{
+					//adding user's id and username to comment object
+					comment.author.id = req.user._id;
+					comment.author.username = req.user.username;
+					comment.save();
+
 					//add comment to restaurant and redirect to show page
 					restaurant.comments.push(comment);
 					restaurant.save();

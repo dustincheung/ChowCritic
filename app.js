@@ -29,7 +29,7 @@ app.use(express.static(__dirname + "/public"));
 mongoose.connect("mongodb://localhost/chowCritic");
 
 //seeding database
-seed();
+//seed();
 
 //configuring passport
 app.use(require("express-session")({

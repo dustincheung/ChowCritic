@@ -27,36 +27,36 @@ function seedDB(){
             console.log(err);
         }
         console.log("removed restaurants!");
-        Comment.remove({}, function(err) {
-            if(err){
-                console.log(err);
-            }
-            console.log("removed comments!");
-             //add a few restaurants
-            data.forEach(function(seed){
-                Restaurant.create(seed, function(err, restaurant){
-                    if(err){
-                        console.log(err)
-                    } else {
-                        console.log("added a restaurant");
-                        //create a comment
-                        Comment.create(
-                            {
-                                text: "This place is great, but I wish there was internet",
-                                author: "Homer"
-                            }, function(err, comment){
-                                if(err){
-                                    console.log(err);
-                                } else {
-                                    restaurant.comments.push(comment);
-                                    restaurant.save();
-                                    console.log("Created new comment");
-                                }
-                            });
-                    }
-                });
-            });
-        });
+        // Comment.remove({}, function(err) {
+        //     if(err){
+        //         console.log(err);
+        //     }
+        //     console.log("removed comments!");
+        //      //add a few restaurants
+        //     data.forEach(function(seed){
+        //         Restaurant.create(seed, function(err, restaurant){
+        //             if(err){
+        //                 console.log(err)
+        //             } else {
+        //                 console.log("added a restaurant");
+        //                 //create a comment
+        //                 Comment.create(
+        //                     {
+        //                         text: "This place is great, but I wish there was internet",
+        //                         author: "Homer"
+        //                     }, function(err, comment){
+        //                         if(err){
+        //                             console.log(err);
+        //                         } else {
+        //                             restaurant.comments.push(comment);
+        //                             restaurant.save();
+        //                             console.log("Created new comment");
+        //                         }
+        //                     });
+        //             }
+        //         });
+        //     });
+        // });
     }); 
     //add a few comments
 }
