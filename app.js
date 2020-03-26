@@ -3,7 +3,8 @@
 //************************************************
 var express = require("express");					
 var bodyParser = require("body-parser");			
-var mongoose = require("mongoose");					
+var mongoose = require("mongoose");	
+var mthdOverride = require("method-override");				
 
 //db models and shema setup
 var Restaurant = require("./models/restaurant");  	
@@ -25,6 +26,9 @@ var app = express();
 
 //tell app to use body parser
 app.use(bodyParser.urlencoded({extended: true}));
+
+//tell app to use method override, necessary for edit and update routes
+app.use(mthdOverride("_method"));
 
 //tell app to serve style sheet directories
 app.use(express.static(__dirname + "/public"));

@@ -71,6 +71,36 @@ router.get("/restaurants/:id", function(req, res){
 	});
 });
 
+//EDIT ROUTE: shows edit form for a specific restaurant
+router.get("/restaurants/:id/edit", function(req, res){
+	var id = req.params.id;
+
+	Restaurant.findById(id, function(err, restaurantFound){
+		if(err){
+			res.redirect("/restaurants");
+		}else{
+			res.render("restaurants/edit.ejs", {restaurant:restaurantFound});
+		}
+	});
+});
+
+//UPDATE ROUTE: updates particular restaurant and redirects
+router.put("/restaurants/:id", function(req, res){
+	var id = req.params.id;
+	//new restaurant obj w/ updated values
+	var restaurant = req.body.restaurant; 
+
+	//find specific restaurant and update with new restaraunt object
+	Restaurant.findByIdAndUpdate(id, restaurant, function(err, updatedRestaurant){
+		if(err){
+			res.redirect("/restaurants");
+		}else{
+			res.redirect("/restaurants/" + id);
+		}
+	});
+	//redirect to show page
+});
+
 //middleware to check if a user is logged in
 function isLoggedIn(req, res, next){
 	if(req.isAuthenticated()){
