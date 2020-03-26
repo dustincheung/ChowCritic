@@ -72,19 +72,14 @@ router.get("/restaurants/:id", function(req, res){
 });
 
 //EDIT ROUTE: shows edit form for a specific restaurant
-router.get("/restaurants/:id/edit", function(req, res){
+router.get("/restaurants/:id/edit", isUserTheAuthor,function(req, res){
 	var id = req.params.id;
-
 	Restaurant.findById(id, function(err, restaurantFound){
-		if(err){
-			res.redirect("/restaurants");
-		}else{
-			res.render("restaurants/edit.ejs", {restaurant:restaurantFound});
-		}
+		res.render("restaurants/edit.ejs", {restaurant:restaurantFound});
 	});
 });
 
-//UPDATE ROUTE: updates particular restaurant and redirects
+//UPDATE ROUTE: updates particular restaurant and redirects to show route
 router.put("/restaurants/:id", function(req, res){
 	var id = req.params.id;
 	//new restaurant obj w/ updated values
@@ -95,10 +90,22 @@ router.put("/restaurants/:id", function(req, res){
 		if(err){
 			res.redirect("/restaurants");
 		}else{
+			//redirect to show page
 			res.redirect("/restaurants/" + id);
 		}
 	});
-	//redirect to show page
+});
+
+//DESTROY ROUTE: removes particular restaurant from db and redirects to index route
+router.delete("/restaurants/:id", function(req, res){
+	var id = req.params.id;
+	Restaurant.findByIdAndRemove(id, function(err){
+		if(err){
+			res.redirect("/restaurants");
+		}else{
+			res.redirect("/restaurants");
+		}
+	})
 });
 
 //middleware to check if a user is logged in
@@ -107,6 +114,29 @@ function isLoggedIn(req, res, next){
 		return next();
 	}
 	res.redirect("/login");
+}
+
+//middleware for edit/update/delete (checks if user is the same as author of restaurant)
+function isUserTheAuthor(req, res, next){
+	var id = req.params.id;
+	//check if user is logged in
+	if(req.isAuthenticated()){
+		//find the restaurant you are trying to edit
+		Restaurant.findById(id, function(err, restaurantFound){
+			if(err){
+				res.redirect("back");
+			}else{
+				//check if the user's id is the same as the restaurant's author's id
+				if(restaurantFound.author.id.equals(req.user._id)){
+					next();
+				}else{
+					res.send("You are not the author of this restaurant.");
+				}
+			}
+		});
+	}else{
+		res.redirect("back");
+	}
 }
 
 //export router

@@ -27,7 +27,7 @@ var app = express();
 //tell app to use body parser
 app.use(bodyParser.urlencoded({extended: true}));
 
-//tell app to use method override, necessary for edit and update routes
+//tell app to use method override, necessary for edit/update/destroy routes
 app.use(mthdOverride("_method"));
 
 //tell app to serve style sheet directories
