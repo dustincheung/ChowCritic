@@ -8,6 +8,9 @@ var router = express.Router();
 var Restaurant = require("../models/restaurant");
 var Comment = require("../models/comment");
 
+//importing middleware functions (used for authentication and authorization)
+var middleware = require("../middleware/index.js");
+
 //************************************************
 //				  RESTAURANT ROUTES
 //************************************************
@@ -28,13 +31,13 @@ router.get("/restaurants", function(req, res){
 });
 
 //NEW ROUTE: shows form to make new restaurant (calls post restaurants post route)
-router.get("/restaurants/new", isLoggedIn, function(req, res){
+router.get("/restaurants/new", middleware.isLoggedIn, function(req, res){
 	res.render("restaurants/new.ejs");
 });
 
 //CREATE ROUTE: creates and adds new restaurant to database and redirects to INDEX ROUTE
 
-router.post("/restaurants", isLoggedIn, function(req, res){
+router.post("/restaurants", middleware.isLoggedIn, function(req, res){
 	var name = req.body.name; 
 	var image = req.body.image; 
 	var description = req.body.description 
@@ -72,7 +75,7 @@ router.get("/restaurants/:id", function(req, res){
 });
 
 //EDIT ROUTE: shows edit form for a specific restaurant
-router.get("/restaurants/:id/edit", isUserTheAuthor,function(req, res){
+router.get("/restaurants/:id/edit", middleware.isUserTheAuthor,function(req, res){
 	var id = req.params.id;
 	Restaurant.findById(id, function(err, restaurantFound){
 		res.render("restaurants/edit.ejs", {restaurant:restaurantFound});
@@ -80,7 +83,7 @@ router.get("/restaurants/:id/edit", isUserTheAuthor,function(req, res){
 });
 
 //UPDATE ROUTE: updates specific restaurant and redirects to show route
-router.put("/restaurants/:id", isUserTheAuthor, function(req, res){
+router.put("/restaurants/:id", middleware.isUserTheAuthor, function(req, res){
 	var id = req.params.id;
 	//new restaurant obj w/ updated values
 	var restaurant = req.body.restaurant; 
@@ -97,7 +100,7 @@ router.put("/restaurants/:id", isUserTheAuthor, function(req, res){
 });
 
 //DESTROY ROUTE: removes specific restaurant from db and redirects to index route
-router.delete("/restaurants/:id", isUserTheAuthor, function(req, res){
+router.delete("/restaurants/:id", middleware.isUserTheAuthor, function(req, res){
 	var id = req.params.id;
 	Restaurant.findByIdAndRemove(id, function(err){
 		if(err){
@@ -107,37 +110,6 @@ router.delete("/restaurants/:id", isUserTheAuthor, function(req, res){
 		}
 	})
 });
-
-//middleware to check if a user is logged in
-function isLoggedIn(req, res, next){
-	if(req.isAuthenticated()){
-		return next();
-	}
-	res.redirect("/login");
-}
-
-//middleware for edit/update/delete (checks if user is the same as author of restaurant)
-function isUserTheAuthor(req, res, next){
-	var id = req.params.id;
-	//check if user is logged in
-	if(req.isAuthenticated()){
-		//find the restaurant you are trying to edit
-		Restaurant.findById(id, function(err, restaurantFound){
-			if(err){
-				res.redirect("back");
-			}else{
-				//check if the user's id is the same as the restaurant's author's id
-				if(restaurantFound.author.id.equals(req.user._id)){
-					next();
-				}else{
-					res.send("You are not the author of this restaurant.");
-				}
-			}
-		});
-	}else{
-		res.redirect("back");
-	}
-}
 
 //export router
 module.exports = router;

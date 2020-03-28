@@ -8,13 +8,16 @@ var router = express.Router();
 var Restaurant = require("../models/restaurant");
 var Comment = require("../models/comment");
 
+//importing middleware functions (used for authentication and authorization)
+var middleware = require("../middleware/index.js");
+
 //*************************************************
 //					COMMENTS ROUTE
 //************************************************
 //NESTED ROUTES FOR COMMENT NEW AND CREATE ROUTE
 
 //NEW ROUTE: shows form to make new comments (calls post restaurants post route)
-router.get("/restaurants/:id/comments/new", isLoggedIn, function(req,res){
+router.get("/restaurants/:id/comments/new", middleware.isLoggedIn, function(req,res){
 	var id = req.params.id;
 
 	Restaurant.findById(id, function(err, restaurant){
@@ -27,7 +30,7 @@ router.get("/restaurants/:id/comments/new", isLoggedIn, function(req,res){
 });
 
 //CREATE ROUTE: creates new comment and redirects to restaurants show page
-router.post("/restaurants/:id/comments", isLoggedIn, function(req, res){
+router.post("/restaurants/:id/comments", middleware.isLoggedIn, function(req, res){
 	//lookup restaurant using id
 	var id = req.params.id;
 
@@ -57,7 +60,7 @@ router.post("/restaurants/:id/comments", isLoggedIn, function(req, res){
 });
 
 //EDIT ROUTE: shows edit form for a specific comment
-router.get("/restaurants/:id/comments/:commentId/edit", function(req, res){
+router.get("/restaurants/:id/comments/:commentId/edit", middleware.isUserTheAuthorComm, function(req, res){
 	var restaurantId = req.params.id;
 	var commentId = req.params.commentId;
 	Comment.findById(commentId,function(err, commentFound){
@@ -70,7 +73,7 @@ router.get("/restaurants/:id/comments/:commentId/edit", function(req, res){
 });
 
 //UPDATE ROUTE: updates specific comment and redirects to restaurant show page
-router.put("/restaurants/:id/comments/:commentId", function(req, res){
+router.put("/restaurants/:id/comments/:commentId", middleware.isUserTheAuthorComm, function(req, res){
 	var commentId = req.params.commentId;
 	var comment = req.body.comment;
 
@@ -84,7 +87,7 @@ router.put("/restaurants/:id/comments/:commentId", function(req, res){
 });
 
 //DELETE ROUTE: removes specific comment from db
-router.delete("/restaurants/:id/comments/:commentId", function(req, res){
+router.delete("/restaurants/:id/comments/:commentId", middleware.isUserTheAuthorComm, function(req, res){
 	var commentId = req.params.commentId;
 	Comment.findByIdAndRemove(commentId, function(err){
 		if(err){
@@ -94,14 +97,6 @@ router.delete("/restaurants/:id/comments/:commentId", function(req, res){
 		}
 	});
 });
-
-//middleware to check if a user is logged in
-function isLoggedIn(req, res, next){
-	if(req.isAuthenticated()){
-		return next();
-	}
-	res.redirect("/login");
-}
 
 //export routers
 module.exports = router;

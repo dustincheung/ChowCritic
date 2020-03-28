@@ -41,13 +41,15 @@
 							<p>
 								<%= comment.text %>		
 							</p>
-							<form action="/restaurants/<%= restaurant._id %>/comments/<%= comment._id %>?_method=delete", method="POST">
-								<a class="btn btn-info btn-xs"
-							   	   href="/restaurants/<%= restaurant._id %>/comments/<%= comment._id %>/edit">
-							   	   edit
-								</a>
-								<button class="btn btn-danger btn-xs">remove</button>
-							</form>
+							<% if(currUser && comment.author.id.equals(currUser._id)){ %>
+								<form action="/restaurants/<%= restaurant._id %>/comments/<%= comment._id %>?_method=delete", method="POST">
+									<a class="btn btn-info btn-xs"
+							   	   		href="/restaurants/<%= restaurant._id %>/comments/<%= comment._id %>/edit">
+							   	   		edit
+									</a>
+									<button class="btn btn-danger btn-xs">remove</button>
+								</form>
+							<% } %>
 						</div>
 					</div>
 				<% }); %>
