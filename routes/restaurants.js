@@ -79,8 +79,8 @@ router.get("/restaurants/:id/edit", isUserTheAuthor,function(req, res){
 	});
 });
 
-//UPDATE ROUTE: updates particular restaurant and redirects to show route
-router.put("/restaurants/:id", function(req, res){
+//UPDATE ROUTE: updates specific restaurant and redirects to show route
+router.put("/restaurants/:id", isUserTheAuthor, function(req, res){
 	var id = req.params.id;
 	//new restaurant obj w/ updated values
 	var restaurant = req.body.restaurant; 
@@ -96,8 +96,8 @@ router.put("/restaurants/:id", function(req, res){
 	});
 });
 
-//DESTROY ROUTE: removes particular restaurant from db and redirects to index route
-router.delete("/restaurants/:id", function(req, res){
+//DESTROY ROUTE: removes specific restaurant from db and redirects to index route
+router.delete("/restaurants/:id", isUserTheAuthor, function(req, res){
 	var id = req.params.id;
 	Restaurant.findByIdAndRemove(id, function(err){
 		if(err){

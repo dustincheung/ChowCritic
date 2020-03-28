@@ -26,6 +26,7 @@ router.get("/restaurants/:id/comments/new", isLoggedIn, function(req,res){
 	});
 });
 
+//CREATE ROUTE: creates new comment and redirects to restaurants show page
 router.post("/restaurants/:id/comments", isLoggedIn, function(req, res){
 	//lookup restaurant using id
 	var id = req.params.id;
@@ -51,6 +52,45 @@ router.post("/restaurants/:id/comments", isLoggedIn, function(req, res){
 					res.redirect("/restaurants/" + restaurant._id);
 				}
 			});
+		}
+	});
+});
+
+//EDIT ROUTE: shows edit form for a specific comment
+router.get("/restaurants/:id/comments/:commentId/edit", function(req, res){
+	var restaurantId = req.params.id;
+	var commentId = req.params.commentId;
+	Comment.findById(commentId,function(err, commentFound){
+		if(err){
+			res.redirect("back");
+		}else{
+			res.render("comments/edit.ejs", {restaurantId:restaurantId, comment:commentFound});
+		}
+	});
+});
+
+//UPDATE ROUTE: updates specific comment and redirects to restaurant show page
+router.put("/restaurants/:id/comments/:commentId", function(req, res){
+	var commentId = req.params.commentId;
+	var comment = req.body.comment;
+
+	Comment.findByIdAndUpdate(commentId, comment, function(err, updatedComment){
+		if(err){
+			res.redirect("back");
+		}else{
+			res.redirect("/restaurants/" + req.params.id);
+		}
+	});
+});
+
+//DELETE ROUTE: removes specific comment from db
+router.delete("/restaurants/:id/comments/:commentId", function(req, res){
+	var commentId = req.params.commentId;
+	Comment.findByIdAndRemove(commentId, function(err){
+		if(err){
+			res.redirect("back");
+		}else{
+			res.redirect("/restaurants/" + req.params.id)
 		}
 	});
 });

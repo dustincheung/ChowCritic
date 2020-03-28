@@ -27,7 +27,8 @@ var app = express();
 //tell app to use body parser
 app.use(bodyParser.urlencoded({extended: true}));
 
-//tell app to use method override, necessary for edit/update/destroy routes
+//tell app to use method override, necessary for update/destroy routes (all post routes)
+//this allows us to distinguish update and destory methods by appending _method in route calls
 app.use(mthdOverride("_method"));
 
 //tell app to serve style sheet directories
@@ -51,7 +52,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-//middleware: instead of passing in currUser: req.user in every render use:
+//middleware: instead of passing in req.user into every ejs template, we can call currUser in every template
 app.use(function(req, res, next){
 	res.locals.currUser = req.user; //for every ejs template currUser will = req.user
 	next(); //continues code
