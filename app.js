@@ -7,6 +7,13 @@ var mongoose = require("mongoose");
 var mthdOverride = require("method-override");				
 var connectFlash = require("connect-flash");
 
+//created environmental variable DATABASEURL that changes based on which environment you are on 
+//DATABASEURL changes when you are running locally (local mongodb db instance)
+//DATABASEURL changes when you are running remote instance on heroku (online instance of mongodb db hosted on mongolab)
+//env var for local can be changed via command line, and for heroku online in app settings
+console.log(process.env.DATABASEURL);
+mongoose.connect(process.env.DATABASEURL);
+
 //db models and shema setup
 var Restaurant = require("./models/restaurant");  	
 var Comment = require("./models/comment"); 	
@@ -38,9 +45,6 @@ app.use(express.static(__dirname + "/public"));
 
 //tell app to use flash alerts
 app.use(connectFlash());
-
-//connecting to mongodb database, if it doesn't exist yet it will create it
-mongoose.connect("mongodb://localhost/chowCritic");
 
 //seeding database
 //seed();
