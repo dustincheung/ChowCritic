@@ -13,7 +13,14 @@
 			<div class="thumbnail">
 				<img class="img-responsive" src="<%=restaurant.image%>">
 				<div class="caption-full">
-					<h4 class="pull-right"> $25/night </h4>
+					<div class="ratings">
+    					<p class="pull-right">
+    						Rating: 
+        					<% for (var i = 0; i < restaurant.rating; i++) { %>
+            					<i class="fas fa-star"></i>
+        					<% } %>
+    					</p>
+					</div>
 					<h4><a><%= restaurant.name %></a></h4>
 					<p><%= restaurant.description %></p>
 					<p>
@@ -22,8 +29,8 @@
 					<!-- check if currUser is defined, if so check if the currUser is the author of restaurant -->
 					<% if(currUser && restaurant.author.id.equals(currUser._id)){ %>
 						<form action="/restaurants/<%= restaurant._id %>?_method=DELETE" method="POST">
-							<a class="btn btn-info btn-lg" href="/restaurants/<%= restaurant._id %>/edit">make changes</a>
-							<button class="btn btn-danger btn-lg">remove</button>
+							<a class="btn btn-info" href="/restaurants/<%= restaurant._id %>/edit">make changes</a>
+							<button class="btn btn-danger">remove</button>
 						</form>
 					<% } %>
 				</div>
