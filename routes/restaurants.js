@@ -11,6 +11,18 @@ var Comment = require("../models/comment");
 //importing middleware functions (used for authentication and authorization)
 var middleware = require("../middleware/index.js");
 
+//requiring geocoder for google maps api
+var NodeGeocoder = require('node-geocoder');
+ 
+var options = {
+  provider: 'google',
+  httpAdapter: 'https',
+  apiKey: process.env.GEOCODER_API_KEY, //environmental variable that can be found in .env file
+  formatter: null
+};
+ 
+var geocoder = NodeGeocoder(options);
+
 //************************************************
 //				  RESTAURANT ROUTES
 //************************************************
@@ -36,29 +48,39 @@ router.get("/restaurants/new", middleware.isLoggedIn, function(req, res){
 });
 
 //CREATE ROUTE: creates and adds new restaurant to database and redirects to INDEX ROUTE
-
 router.post("/restaurants", middleware.isLoggedIn, function(req, res){
-	var name = req.body.name; 
-	var image = req.body.image; 
-	var description = req.body.description;
-	var rating = req.body.rating;
-	
-	var author = {
-			id: req.user._id,
-			username: req.user.username
-	}
+  var name = req.body.name;
+  var image = req.body.image;
+  var description = req.body.description;
+  var rating = req.body.rating;
 
-	var restaurant = {name: name, image: image, description: description, author: author, rating: rating}; //creates new restaurant obj
-	console.log(restaurant);
+  var author = {
+      id: req.user._id,
+      username: req.user.username
+  }
 
-	Restaurant.create(restaurant, function(err, restaurant){   
-		if(err){
-			console.log(err);
-		}else{
-			req.flash("success", "Success! ");
-			res.redirect("/restaurants");
-		}
-	});
+  //get lat, long, location, from inputted geocoded location
+  geocoder.geocode(req.body.location, function (err, data) {
+    if (err || !data.length) {
+      req.flash("error", "This address is invalid!");
+      return res.redirect('back');
+    }
+    var lat = data[0].latitude;
+    var long = data[0].longitude;
+    var location = data[0].formattedAddress;
+
+    var restaurant = {name: name, image:image, description:description, rating:rating, author:author, location:location, lat:lat, long:long};
+    
+    Restaurant.create(restaurant, function(err, restaurant){
+        if(err){
+            console.log(err);
+        } else {
+            //redirect back to restaurants page
+            console.log(restaurant);
+            res.redirect("/restaurants");
+        }
+    });
+  });
 });
 
 //SHOW ROUTE: shows info about one restaurant (make sure this route comes after NEW ROUTE so it doesn't overrwrite)
@@ -86,19 +108,30 @@ router.get("/restaurants/:id/edit", middleware.isUserTheAuthor,function(req, res
 
 //UPDATE ROUTE: updates specific restaurant and redirects to show route
 router.put("/restaurants/:id", middleware.isUserTheAuthor, function(req, res){
-	var id = req.params.id;
-	//new restaurant obj w/ updated values
-	var restaurant = req.body.restaurant; 
+  //old restaurant id
+  var id = req.params.id;
+  //new restaurant obj w/ updated values
+  var restaurant = req.body.restaurant; 
 
-	//find specific restaurant and update with new restaraunt object
-	Restaurant.findByIdAndUpdate(id, restaurant, function(err, updatedRestaurant){
-		if(err){
-			res.redirect("/restaurants");
-		}else{
-			//redirect to show page
-			res.redirect("/restaurants/" + id);
-		}
-	});
+  //get lat, long, location from geocoded location
+  geocoder.geocode(req.body.location, function (err, data) {
+    if (err || !data.length) {
+      req.flash("error", "This address is invalid!");
+      return res.redirect("back");
+    }
+    restaurant.lat = data[0].latitude;
+    restaurant.long = data[0].longitude;
+    restaurant.location = data[0].formattedAddress;
+
+    Restaurant.findByIdAndUpdate(id, restaurant, function(err, updatedRestaurant){
+        if(err){
+            req.flash("error", err.message);
+            res.redirect("back");
+        } else {
+            res.redirect("/restaurants/" + id);
+        }
+    });
+  });
 });
 
 //DESTROY ROUTE: removes specific restaurant from db and redirects to index route

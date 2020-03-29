@@ -7,6 +7,9 @@ var restaurantSchema = new mongoose.Schema({
 	image: String,
 	description: String,
 	rating: Number,
+	lat: Number,
+	long: Number,
+	location: String,
 	comments:[										 
 		{
 			type: mongoose.Schema.Types.ObjectId,    //Association, restaurant has an aray of comment id's

@@ -8,6 +8,8 @@
 				<li class="list-group-item"> info 2 </li>
 				<li class="list-group-item"> info 3 </li>
 			</div>
+			<!-- Map will display here	-->
+			<div id="map"></div>
 		</div>
 		<div class="col-md-9">
 			<div class="thumbnail">
@@ -65,6 +67,35 @@
 	</div>
 </div>
 
+<!-- Script that populates Map -->
+<script>
+  function initMap() {
+    var lat = <%= restaurant.lat %>;
+    var long = <%= restaurant.long %>;
+    var center = {lat: lat, lng: long };
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 8,
+        center: center,
+        scrollwheel: false
+    });
+    var contentString = `
+      <strong><%= restaurant.name %><br />
+      <%= restaurant.location %></strong>
+      <p><%= restaurant.description %></p>
+    `
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+    var marker = new google.maps.Marker({
+        position: center,
+        map: map
+    });
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
+    });
+  }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyANpXjgkfg43hgiNkVBpTeFWgvRkqnCb_o&callback=initMap"></script>
 
 
 <%- include("../partials/footer.ejs") %>

@@ -1,3 +1,6 @@
+//loads environmental variables from a .env file, allows keys to persist each time you restart terminal
+require("dotenv").config();
+
 //************************************************
 //					    SETUP
 //************************************************
