@@ -35,6 +35,7 @@ app.use(mthdOverride("_method"));
 //tell app to serve style sheet directories
 app.use(express.static(__dirname + "/public"));
 
+
 //tell app to use flash alerts
 app.use(connectFlash());
 
