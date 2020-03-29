@@ -5,6 +5,7 @@ var express = require("express");
 var bodyParser = require("body-parser");			
 var mongoose = require("mongoose");	
 var mthdOverride = require("method-override");				
+var connectFlash = require("connect-flash");
 
 //db models and shema setup
 var Restaurant = require("./models/restaurant");  	
@@ -27,12 +28,15 @@ var app = express();
 //tell app to use body parser
 app.use(bodyParser.urlencoded({extended: true}));
 
-//tell app to use method override, necessary for update/destroy routes (all post routes)
+//tell app to use method override, necessary for update/destroy routes (all post routes) 
 //this allows us to distinguish update and destory methods by appending _method in route calls
 app.use(mthdOverride("_method"));
 
 //tell app to serve style sheet directories
 app.use(express.static(__dirname + "/public"));
+
+//tell app to use flash alerts
+app.use(connectFlash());
 
 //connecting to mongodb database, if it doesn't exist yet it will create it
 mongoose.connect("mongodb://localhost/chowCritic");
@@ -40,7 +44,7 @@ mongoose.connect("mongodb://localhost/chowCritic");
 //seeding database
 //seed();
 
-//configuring passport
+//configuring passport and telling app to use express session
 app.use(require("express-session")({
 	secret: "dustincnj",
 	resave: false,
@@ -55,6 +59,8 @@ passport.deserializeUser(User.deserializeUser());
 //middleware: instead of passing in req.user into every ejs template, we can call currUser in every template
 app.use(function(req, res, next){
 	res.locals.currUser = req.user; //for every ejs template currUser will = req.user
+	res.locals.success = req.flash("success"); //defaulted vars for success/error messages
+	res.locals.error = req.flash("error");  
 	next(); //continues code
 });
 

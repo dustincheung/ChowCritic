@@ -26,15 +26,16 @@ router.get("/register", function(req, res){
 	res.render("register.ejs");
 });
 
-//handle sign up logic
+//handle registering user logic
 router.post("/register", function(req, res){
 	var newUser = new User({username: req.body.username});
 	User.register(newUser, req.body.password, function(err, user){
 		if(err){
-			console.log(err);
-			res.render("register.ejs");
+			req.flash("error", err.message);
+			return res.redirect("/register");
 		}
 		passport.authenticate("local")(req, res, function(){
+			req.flash("success", "Welcome to ChowCritic " + user.username + "!");
 			res.redirect("/restaurants");
 		})
 	});
@@ -57,16 +58,9 @@ router.post("/login", passport.authenticate("local",
 //handle log out logic
 router.get("/logout", function(req, res){
 	req.logout();
+	req.flash("success", "You are now logged out.")
 	res.redirect("/restaurants");
 });
-
-//middleware to check if a user is logged in
-function isLoggedIn(req, res, next){
-	if(req.isAuthenticated()){
-		return next();
-	}
-	res.redirect("/login");
-}
 
 //export routers
 module.exports = router;

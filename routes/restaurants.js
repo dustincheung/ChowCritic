@@ -54,6 +54,7 @@ router.post("/restaurants", middleware.isLoggedIn, function(req, res){
 		if(err){
 			console.log(err);
 		}else{
+			req.flash("success", "Success! ");
 			res.redirect("/restaurants");
 		}
 	});

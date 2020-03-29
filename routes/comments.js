@@ -52,6 +52,7 @@ router.post("/restaurants/:id/comments", middleware.isLoggedIn, function(req, re
 					//add comment to restaurant and redirect to show page
 					restaurant.comments.push(comment);
 					restaurant.save();
+					req.flash("success", "Success!");
 					res.redirect("/restaurants/" + restaurant._id);
 				}
 			});
@@ -81,6 +82,7 @@ router.put("/restaurants/:id/comments/:commentId", middleware.isUserTheAuthorCom
 		if(err){
 			res.redirect("back");
 		}else{
+			req.flash("success", "Success!");
 			res.redirect("/restaurants/" + req.params.id);
 		}
 	});
