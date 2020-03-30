@@ -45,19 +45,21 @@
 				<hr>
 				<% restaurant.comments.forEach(function(comment){ %>
 					<div class="row">
-						<div class="col-md-12">
+						<div id="comment" class="col-md-12">
 							<strong><%= comment.author.username %></strong>
-							<span class="pull-right"> 7 days ago </span>
+							<span class="pull-right"></span>
 							<p>
 								<%= comment.text %>		
 							</p>
 							<% if(currUser && comment.author.id.equals(currUser._id)){ %>
 								<form action="/restaurants/<%= restaurant._id %>/comments/<%= comment._id %>?_method=delete", method="POST">
-									<a class="btn btn-info btn-xs"
-							   	   		href="/restaurants/<%= restaurant._id %>/comments/<%= comment._id %>/edit">
-							   	   		edit
-									</a>
-									<button class="btn btn-danger btn-xs">remove</button>
+									<span class="pull-right">
+										<a class="btn btn-info btn-xs"
+							   	   			href="/restaurants/<%= restaurant._id %>/comments/<%= comment._id %>/edit">
+							   	   			edit
+										</a>
+										<button class="btn btn-danger btn-xs">remove</button>
+									</span>
 								</form>
 							<% } %>
 						</div>
